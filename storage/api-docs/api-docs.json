@@ -81,6 +81,75 @@
                         "description": "Too many requests"
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Contact"
+                ],
+                "summary": "Create a new contact record",
+                "operationId": "15c43d3f7dcf308412eae1fed188e42a",
+                "requestBody": {
+                    "request": "ContactCreateRequest",
+                    "description": "Contact data to be created",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "shipper_id": {
+                                        "type": "integer",
+                                        "example": 22
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Maximillian Bills"
+                                    },
+                                    "contact_number": {
+                                        "type": "string",
+                                        "example": "+1 (770) 854-3563"
+                                    },
+                                    "contact_type": {
+                                        "type": "enum",
+                                        "enum": [
+                                            "primary",
+                                            "site",
+                                            "shipping",
+                                            "billing",
+                                            "admin"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    },
+                    "422": {
+                        "description": "Request has validation errors"
+                    },
+                    "429": {
+                        "description": "Too many requests"
+                    }
+                },
+                "security": {
+                    "sanctum": {}
+                }
             }
         },
         "/api/v1/contacts/{contact-id}": {
@@ -245,6 +314,61 @@
                     "429": {
                         "description": "Too many requests"
                     }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Shipper"
+                ],
+                "summary": "Create a new shipper record",
+                "operationId": "ae4d9bbf1ca426010f6ceb33a5b8f691",
+                "requestBody": {
+                    "request": "ShipperCreateRequest",
+                    "description": "Shipper data to be created",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Bills Inc"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "47 Upperthong Ln\\nHolmfirth\\nHD9 3UZ"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    },
+                    "422": {
+                        "description": "Request has validation errors"
+                    },
+                    "429": {
+                        "description": "Too many requests"
+                    }
+                },
+                "security": {
+                    "sanctum": {}
                 }
             }
         },

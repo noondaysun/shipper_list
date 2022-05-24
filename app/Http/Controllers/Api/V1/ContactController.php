@@ -69,14 +69,59 @@ class ContactController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreContactRequest  $request
-     * @return \Illuminate\Http\Response
+     * @OA\Post(
+     *      path="/api/v1/contacts",
+     *      summary="Create a new contact record",
+     *      security={"sanctum": {}},
+     *      tags={"Contact"},
+     *      @OA\RequestBody(
+     *          request="ContactCreateRequest",
+     *          description="Contact data to be created",
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="shipper_id",
+     *                  type="integer",
+     *                  example=22
+     *              ),
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  example="Maximillian Bills"
+     *              ),
+     *              @OA\Property(
+     *                  property="contact_number",
+     *                  type="string",
+     *                  example="+1 (770) 854-3563"
+     *              ),
+     *              @OA\Property(
+     *                  property="contact_type",
+     *                  type="enum",
+     *                  enum={"primary", "site", "shipping", "billing", "admin"},
+     *              ),
+     *          )
+     *      ),
+     *      @OA\Response(response=201, description="Created"),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=401, description="Unauthorized"),
+     *      @OA\Response(response=403, description="Forbidden"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     *      @OA\Response(response=422, description="Request has validation errors"),
+     *      @OA\Response(response=429, description="Too many requests"),
+     * )
      */
     public function store(StoreContactRequest $request)
     {
-        //
+        $contact = Contact::create($request->validated());
+
+        return response()->json([
+            'links' => [
+                'self' => route('contacts.show', ['contact-id' => $contact->id]),
+            ],
+            'data' => [
+                'id' => $contact->id,
+            ],
+        ], Response::HTTP_CREATED);
     }
 
     /**

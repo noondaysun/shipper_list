@@ -50,14 +50,49 @@ class ShipperController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreShipperRequest  $request
-     * @return \Illuminate\Http\Response
+     * @OA\Post(
+     *      path="/api/v1/shippers",
+     *      summary="Create a new shipper record",
+     *      security={"sanctum": {}},
+     *      tags={"Shipper"},
+     *      @OA\RequestBody(
+     *          request="ShipperCreateRequest",
+     *          description="Shipper data to be created",
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  example="Bills Inc"
+     *              ),
+     *              @OA\Property(
+     *                  property="address",
+     *                  type="string",
+     *                  example="47 Upperthong Ln\nHolmfirth\nHD9 3UZ"
+     *              ),
+     *          )
+     *      ),
+     *      @OA\Response(response=201, description="Created"),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=401, description="Unauthorized"),
+     *      @OA\Response(response=403, description="Forbidden"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     *      @OA\Response(response=422, description="Request has validation errors"),
+     *      @OA\Response(response=429, description="Too many requests"),
+     * )
      */
     public function store(StoreShipperRequest $request)
     {
-        //
+        $shipper = Shipper::create($request->validated());
+
+        return response()->json([
+            'links' => [
+                'self' => route('shippers.show', ['shipper-id' => $shipper->id]),
+            ],
+            'data' => [
+                'id' => $shipper->id,
+            ],
+        ], Response::HTTP_CREATED);
     }
 
     /**

@@ -18,12 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\Api\V1'], function () {
     Route::get('/contacts', 'ContactController@index');
     Route::post('/contacts', 'ContactController@store');
-    Route::get('/contacts/{contact}', 'ContactController@show');
-    Route::put('/contacts/{contact}', 'ContactController@update');
+    Route::get('/contacts/{contact-id}', 'ContactController@show')->name('contacts.show');
+    Route::put('/contacts/{contact-id}', 'ContactController@update');
     Route::delete('/contacts/{contact}', 'ContactController@destroy');
     Route::get('/shippers', 'ShipperController@index');
     Route::post('/shippers', 'ShipperController@store');
-    Route::get('/shippers/{shipper-id}', 'ShipperController@show');
+    Route::get('/shippers/{shipper-id}', 'ShipperController@show')->name('shippers.show');
     Route::put('/shippers/{shipper-id}', 'ShipperController@update');
     Route::delete('/shippers/{shipper-id}', 'ShipperController@destroy');
 });
