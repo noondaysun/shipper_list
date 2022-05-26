@@ -6,6 +6,82 @@
     },
     "paths": {
         "/api": {},
+        "/api/v1/auth/signin": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Log in a user",
+                "operationId": "50977055823e169f36241aff1c6275fb",
+                "requestBody": {
+                    "request": "AuthSignIn",
+                    "description": "Sign in for a user",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "test@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "Right#Password1!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user_id": {
+                                            "type": "string",
+                                            "example": "1"
+                                        },
+                                        "access_token": {
+                                            "description": "JWT token",
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "description": "Token type",
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "expires_at": {
+                                            "description": "Token expiration date",
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2022-03-23T16:43:46+0000"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    },
+                    "422": {
+                        "description": "Request has validation errors"
+                    },
+                    "429": {
+                        "description": "Too many requests"
+                    }
+                }
+            }
+        },
         "/api/v1/contacts": {
             "get": {
                 "tags": [
@@ -586,6 +662,14 @@
                 "xml": {
                     "name": "Contact"
                 }
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
             }
         }
     }

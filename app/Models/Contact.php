@@ -31,23 +31,23 @@ class Contact extends Model
         'contact_type',
     ];
 
-    public function scopeFilterByRequest(Builder $query, Request $request): Builder
+    public function scopeFilterByRequest(Builder $builder, Request $request): Builder
     {
         if ($request->has('name')) {
-            $query->where('name', 'ilike', "%{$request->get('name')}%");
+            $builder->where('name', 'ilike', sprintf('%%%s%%', $request->get('name')));
         }
 
         if ($request->has('contact-type')) {
-            $query->where('contact_type', $request->get('contact-type'));
+            $builder->where('contact_type', $request->get('contact-type'));
         }
 
         if ($request->has('shipper-name')) {
-            $query->select(['contacts.*'])
+            $builder->select(['contacts.*'])
                 ->join('shippers', 'shippers.id', '=', 'contacts.shipper_id')
-                ->where('shippers.name', 'ilike', "%{$request->get('shipper-name')}%");
+                ->where('shippers.name', 'ilike', sprintf('%%%s%%', $request->get('shipper-name')));
         }
 
-        return $query;
+        return $builder;
     }
 
     public function shipper(): BelongsTo

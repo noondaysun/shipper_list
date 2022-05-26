@@ -32,12 +32,12 @@ class Shipper extends Model
         return $this->hasMany(Contact::class);
     }
 
-    public function scopeFilterByRequest(Builder $query, Request $request): Builder
+    public function scopeFilterByRequest(Builder $builder, Request $request): Builder
     {
         if ($request->has('name')) {
-            $query->where('name', 'ilike', "%{$request->get('name')}%");
+            $builder->where('name', 'ilike', sprintf('%%%s%%', $request->get('name')));
         }
 
-        return $query;
+        return $builder;
     }
 }

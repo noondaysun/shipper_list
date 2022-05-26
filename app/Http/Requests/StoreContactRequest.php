@@ -13,7 +13,7 @@ class StoreContactRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return $this->user();
     }
 
     /**
@@ -24,7 +24,10 @@ class StoreContactRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'shipper_id' => 'required|integer|exists:shippers,id',
+            'name' => 'required|string|max:255',
+            'contact_number' => 'required|string|max:255',
+            'contact_type' => 'required|string|max:255|in:primary,site,billing,admin,shipping',
         ];
     }
 }

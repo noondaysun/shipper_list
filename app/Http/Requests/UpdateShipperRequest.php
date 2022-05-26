@@ -13,7 +13,7 @@ class UpdateShipperRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return $this->user();
     }
 
     /**
@@ -24,7 +24,17 @@ class UpdateShipperRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'shipper-id' => 'required|integer|exists:shippers,id',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+        $data['shipper-id'] = $this->route('shipper-id');
+
+        return $data;
     }
 }

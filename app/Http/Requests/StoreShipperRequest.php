@@ -13,7 +13,7 @@ class StoreShipperRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return $this->user();
     }
 
     /**
@@ -24,7 +24,8 @@ class StoreShipperRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
         ];
     }
 }

@@ -110,9 +110,9 @@ class ContactController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function store(StoreContactRequest $request)
+    public function store(StoreContactRequest $storeContactRequest)
     {
-        $contact = Contact::create($request->validated());
+        $contact = Contact::create($storeContactRequest->validated());
 
         return response()->json([
             'links' => [
@@ -159,11 +159,9 @@ class ContactController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateContactRequest  $request
-     * @param  \App\Models\Contact  $contact
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateContactRequest $request, Contact $contact)
+    public function update(UpdateContactRequest $updateContactRequest, Contact $contact)
     {
         //
     }

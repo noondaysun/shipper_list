@@ -81,9 +81,9 @@ class ShipperController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function store(StoreShipperRequest $request)
+    public function store(StoreShipperRequest $storeShipperRequest)
     {
-        $shipper = Shipper::create($request->validated());
+        $shipper = Shipper::create($storeShipperRequest->validated());
 
         return response()->json([
             'links' => [
@@ -130,11 +130,9 @@ class ShipperController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateShipperRequest  $request
-     * @param  \App\Models\Shipper  $shipper
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateShipperRequest $request, Shipper $shipper)
+    public function update(UpdateShipperRequest $updateShipperRequest, Shipper $shipper)
     {
         //
     }

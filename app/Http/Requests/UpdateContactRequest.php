@@ -13,7 +13,7 @@ class UpdateContactRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return $this->user();
     }
 
     /**
@@ -24,7 +24,19 @@ class UpdateContactRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'contact-id' => 'required|integer|exists:contacts,id',
+            'shipper_id' => 'required|integer|exists:shippers,id',
+            'name' => 'required|string|max:255',
+            'contact_number' => 'required|string|max:255',
+            'cantact_type' => 'required|string|max:255|in:primary,site,billing,admin,shipping',
         ];
+    }
+
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+        $data['contact-id'] = $this->route('contact-id');
+
+        return $data;
     }
 }
