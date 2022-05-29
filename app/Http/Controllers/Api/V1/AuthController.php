@@ -58,7 +58,7 @@ class AuthController extends Controller
             'password' => 'required|min:8',
         ]);
 
-        if (!Auth::attempt([
+        if (! Auth::attempt([
             'email' => $validated['email'],
             'password' => $validated['password'],
         ])) {
@@ -67,7 +67,7 @@ class AuthController extends Controller
                     'errors' => [
                         [
                             'status' => Response::HTTP_UNAUTHORIZED,
-                            'detail' => 'Could not successfully authenticate. Please try again later.'
+                            'detail' => 'Could not successfully authenticate. Please try again later.',
                         ],
                     ],
                 ],
@@ -76,7 +76,6 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request['email'])->first();
-        $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'user_id' => $user->id,

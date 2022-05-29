@@ -9,7 +9,7 @@ test('sign-in', function () {
     $user = User::factory(1)->create();
     $this->post('/api/v1/auth/signin', [
         'email' => $user[0]->email,
-        'password' => 'password',
+        'password' => 'Right#Password1!',
     ])->assertStatus(Response::HTTP_OK)
         ->assertJsonStructure([
             'user_id',

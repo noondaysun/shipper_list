@@ -22,4 +22,7 @@ start:
 > ./vendor/bin/sail up -d
 
 test:
+> ./vendor/bin/php-cs-fixer fix
+> ./vendor/bin/rector process --ansi
+> ./vendor/bin/phpstan analyse --memory-limit=2G
 > ./vendor/bin/sail test

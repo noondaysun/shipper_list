@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateShipperRequest;
 use App\Http\Resources\ShipperCollection;
 use App\Http\Resources\ShipperResource;
 use App\Models\Shipper;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -81,7 +82,7 @@ class ShipperController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function store(StoreShipperRequest $storeShipperRequest)
+    public function store(StoreShipperRequest $storeShipperRequest): JsonResponse
     {
         $shipper = Shipper::create($storeShipperRequest->validated());
 
@@ -128,13 +129,49 @@ class ShipperController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\Response
+     * @OA\Put(
+     *      path="/api/v1/shippers/{shipper-id}",
+     *      summary="Update a shipper record",
+     *      security={"sanctum": {}},
+     *      tags={"Shipper"},
+     *      @OA\RequestBody(
+     *          request="ShipperUpdateRequest",
+     *          description="Shipper data to be updated",
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  example="Bills Inc"
+     *              ),
+     *              @OA\Property(
+     *                  property="address",
+     *                  type="string",
+     *                  example="47 Upperthong Ln\nHolmfirth\nHD9 3UZ"
+     *              ),
+     *          )
+     *      ),
+     *      @OA\Response(response=200, description="OK"),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=401, description="Unauthorized"),
+     *      @OA\Response(response=403, description="Forbidden"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     *      @OA\Response(response=422, description="Request has validation errors"),
+     *      @OA\Response(response=429, description="Too many requests"),
+     * )
      */
-    public function update(UpdateShipperRequest $updateShipperRequest, Shipper $shipper)
+    public function update(UpdateShipperRequest $updateShipperRequest, Shipper $shipper): JsonResponse
     {
-        //
+        $shipper->update($updateShipperRequest->validated());
+
+        return response()->json([
+            'links' => [
+                'self' => route('shippers.show', ['shipper-id' => $shipper->id]),
+            ],
+            'data' => [
+                'id' => $shipper->id,
+            ],
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -169,7 +206,7 @@ class ShipperController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function destroy(Shipper $shipper)
+    public function destroy(Shipper $shipper): JsonResponse
     {
         Shipper::destroy($shipper->id);
 

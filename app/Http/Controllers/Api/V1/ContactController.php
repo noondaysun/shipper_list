@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateContactRequest;
 use App\Http\Resources\ContactCollection;
 use App\Http\Resources\ContactResource;
 use App\Models\Contact;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -110,7 +111,7 @@ class ContactController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function store(StoreContactRequest $storeContactRequest)
+    public function store(StoreContactRequest $storeContactRequest): JsonResponse
     {
         $contact = Contact::create($storeContactRequest->validated());
 
@@ -157,13 +158,60 @@ class ContactController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\Response
+     * @OA\Put(
+     *      path="/api/v1/contacts/{contact-id}",
+     *      summary="Update a contact record",
+     *      security={"sanctum": {}},
+     *      tags={"Contact"},
+     *      @OA\RequestBody(
+     *          request="ContactUpdateRequest",
+     *          description="Contact data to be updated",
+     *          required=true,
+     *          @OA\JsonContent(
+     *              @OA\Property(
+     *                  property="shipper_id",
+     *                  type="integer",
+     *                  example=22
+     *              ),
+     *              @OA\Property(
+     *                  property="name",
+     *                  type="string",
+     *                  example="Maximillian Bills"
+     *              ),
+     *              @OA\Property(
+     *                  property="contact_number",
+     *                  type="string",
+     *                  example="+1 (770) 854-3563"
+     *              ),
+     *              @OA\Property(
+     *                  property="contact_type",
+     *                  type="enum",
+     *                  enum={"primary", "site", "shipping", "billing", "admin"},
+     *              ),
+     *          )
+     *      ),
+     *      @OA\Response(response=200, description="OK"),
+     *      @OA\Response(response=400, description="Bad request"),
+     *      @OA\Response(response=401, description="Unauthorized"),
+     *      @OA\Response(response=403, description="Forbidden"),
+     *      @OA\Response(response=404, description="Resource Not Found"),
+     *      @OA\Response(response=422, description="Request has validation errors"),
+     *      @OA\Response(response=429, description="Too many requests"),
+     * )
      */
-    public function update(UpdateContactRequest $updateContactRequest, Contact $contact)
+    public function update(UpdateContactRequest $updateContactRequest, Contact $contact): JsonResponse
     {
-        //
+        $validated = $updateContactRequest->validated();
+        $contact->update($validated);
+
+        return response()->json([
+            'links' => [
+                'self' => route('contacts.show', ['contact-id' => $contact->id]),
+            ],
+            'data' => [
+                'id' => $contact->id,
+            ],
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -198,7 +246,7 @@ class ContactController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function destroy(Contact $contact)
+    public function destroy(Contact $contact): JsonResponse
     {
         Contact::destroy($contact->id);
 

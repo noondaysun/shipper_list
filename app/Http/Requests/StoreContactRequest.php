@@ -13,7 +13,7 @@ class StoreContactRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user();
+        return $this->user() !== null;
     }
 
     /**

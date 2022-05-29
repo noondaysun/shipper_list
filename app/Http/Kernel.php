@@ -9,7 +9,11 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
  *     version="0.0.1",
  *     title="Shipper list API"
  * )
- * @OA\PathItem(path="/api")
+ * @OA\SecurityScheme(
+ *      securityScheme="sanctum",
+ *      type="http",
+ *      scheme="bearer"
+ * )
  */
 class Kernel extends HttpKernel
 {
