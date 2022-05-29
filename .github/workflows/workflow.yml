@@ -44,7 +44,47 @@ jobs:
       - name: Push changes
         if: steps.rector-git-check.outputs.modified == 'true'
         run: git push
-
+  scan:
+    name: audit npm composer
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v2
+      id: cache-db
+      with:
+          path: ~/.symfony/cache
+          key: db
+    - uses: symfonycorp/security-checker-action@v2
+    - name: install dependencies
+      run: npm ci
+    - uses: oke-py/npm-audit-action@v1.8.4
+      with:
+        audit_level: high
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        issue_assignees: oke-py
+        issue_labels: vulnerability,test
+        dedupe_issues: true
+  test:
+    needs: scan
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12.2-alpine
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: test_ash_ecrf_platform
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
       ## Run tests
       - name: Execute tests
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: laravel
+          DB_PORT: 5432
+          DB_DIALECT: postgres
         run: ./vendor/bin/pest
