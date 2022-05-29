@@ -21,7 +21,7 @@ jobs:
           php-version: 8.1
           coverage: none
 
-      - run: composer install --no-progress --ansi --prefer-dist --no-interaction --no-suggest
+      - run: composer install --no-progress --ansi --prefer-dist --no-interaction
 
       ## First run Rector without --dry-run, it would stop the process with exit 1 here
       - run: vendor/bin/rector process --ansi
@@ -48,7 +48,9 @@ jobs:
     name: audit npm composer
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+          token: ${{ secrets.ACCESS_TOKEN }}
     - uses: actions/cache@v2
       id: cache-db
       with:
@@ -78,7 +80,15 @@ jobs:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
+      - uses: actions/checkout@v3
+        with:
+            token: ${{ secrets.ACCESS_TOKEN }}
       ## Run tests
+      - run: composer install --no-progress --ansi --prefer-dist --no-interaction
+      - name: Generate key
+        run: |
+          touch .env
+          php artisan key:generate
       - name: Execute tests
         env:
           DB_HOST: 127.0.0.1
