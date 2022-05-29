@@ -1,0 +1,100 @@
+name: ash-ecrf-platform
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  rector-ci:
+    runs-on: ubuntu-latest
+    # run only on commits on main repository, not on forks
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          coverage: none
+
+      - run: composer install --no-progress --ansi --prefer-dist --no-interaction
+
+      ## First run Rector without --dry-run, it would stop the process with exit 1 here
+      - run: vendor/bin/rector process --ansi
+
+      - name: Check for Rector modified files
+        id: rector-git-check
+        run: echo ::set-output name=modified::$(if git diff --exit-code --no-patch; then echo "false"; else echo "true"; fi)
+
+      - name: Git config
+        if: steps.rector-git-check.outputs.modified == 'true'
+        run: |
+          git config --global user.name 'rector-bot'
+          git config --global user.email 'devops+bot@prometheusresearch.com'
+          echo name=COMMIT_MESSAGE::$(git log -1 --pretty=format:"%s") >> "${GITHUB_ENV}"
+
+      - name: Commit Rector changes
+        if: steps.rector-git-check.outputs.modified == 'true'
+        run: git commit -am "[rector] ${COMMIT_MESSAGE}"
+
+      - name: Push changes
+        if: steps.rector-git-check.outputs.modified == 'true'
+        run: git push
+  scan:
+    name: audit npm composer
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+    - uses: actions/cache@v2
+      id: cache-db
+      with:
+          path: ~/.symfony/cache
+          key: db
+    - uses: symfonycorp/security-checker-action@v2
+    - name: install dependencies
+      run: npm ci
+    - uses: oke-py/npm-audit-action@v1.8.4
+      with:
+        audit_level: high
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        issue_assignees: oke-py
+        issue_labels: vulnerability,test
+        dedupe_issues: true
+  test:
+    needs: scan
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12.2-alpine
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: test_ash_ecrf_platform
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+        with:
+            token: ${{ secrets.ACCESS_TOKEN }}
+      ## Run tests
+      - run: composer install --no-progress --ansi --prefer-dist --no-interaction
+      - name: Generate key
+        run: |
+          touch .env
+          php artisan key:generate
+      - name: Execute tests
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: laravel
+          DB_PORT: 5432
+          DB_DIALECT: postgres
+        run: ./vendor/bin/pest
