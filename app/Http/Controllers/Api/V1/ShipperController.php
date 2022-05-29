@@ -88,7 +88,7 @@ class ShipperController extends Controller
 
         return response()->json([
             'links' => [
-                'self' => route('shippers.show', ['shipper-id' => $shipper->id]),
+                'self' => route('shippers.show', ['shipper_id' => $shipper->id]),
             ],
             'data' => [
                 'id' => $shipper->id,
@@ -98,7 +98,7 @@ class ShipperController extends Controller
 
     /**
      * @OA\Get(
-     *      path="/api/v1/shippers/{shipper-id}",
+     *      path="/api/v1/shippers/{shipper_id}",
      *      summary="Prints details for a single shipper",
      *      tags={ "Shipper" },
      *      @OA\Parameter(
@@ -123,14 +123,16 @@ class ShipperController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function show(Shipper $shipper): ShipperResource
+    public function show(Request $request): ShipperResource
     {
+        $shipper = Shipper::findOrFail($request->route('shipper_id'));
+
         return new ShipperResource($shipper);
     }
 
     /**
      * @OA\Put(
-     *      path="/api/v1/shippers/{shipper-id}",
+     *      path="/api/v1/shippers/{shipper_id}",
      *      summary="Update a shipper record",
      *      security={"sanctum": {}},
      *      tags={"Shipper"},
@@ -160,24 +162,18 @@ class ShipperController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function update(UpdateShipperRequest $updateShipperRequest, Shipper $shipper): JsonResponse
+    public function update(UpdateShipperRequest $updateShipperRequest): ShipperResource
     {
+        $shipper = Shipper::findOrFail($updateShipperRequest->route('shipper_id'));
         $shipper->update($updateShipperRequest->validated());
 
-        return response()->json([
-            'links' => [
-                'self' => route('shippers.show', ['shipper-id' => $shipper->id]),
-            ],
-            'data' => [
-                'id' => $shipper->id,
-            ],
-        ], Response::HTTP_OK);
+        return new ShipperResource($shipper);
     }
 
     /**
      * Remove the specified resource from storage.
      * @OA\Delete(
-     *      path="/api/v1/shippers/{shipper-id}",
+     *      path="/api/v1/shippers/{shipper_id}",
      *      security={"sanctum": {}},
      *      summary="Delete a specified resource",
      *      tags={"Shipper"},

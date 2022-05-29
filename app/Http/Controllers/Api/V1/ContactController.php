@@ -117,7 +117,7 @@ class ContactController extends Controller
 
         return response()->json([
             'links' => [
-                'self' => route('contacts.show', ['contact-id' => $contact->id]),
+                'self' => route('contacts.show', ['contact_id' => $contact->id]),
             ],
             'data' => [
                 'id' => $contact->id,
@@ -127,11 +127,11 @@ class ContactController extends Controller
 
     /**
      * @OA\Get(
-     *      path="/api/v1/contacts/{contact-id}",
+     *      path="/api/v1/contacts/{contact_id}",
      *      summary="Prints details for a single contact",
      *      tags={ "Contact" },
      *      @OA\Parameter(
-     *          name="contact-id",
+     *          name="contact_id",
      *          description="Contact ID",
      *          in="path",
      *          @OA\Schema(
@@ -152,14 +152,14 @@ class ContactController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function show(Contact $contact): ContactResource
+    public function show(Request $request): ContactResource
     {
-        return new ContactResource($contact);
+        return new ContactResource(Contact::findOrFail($request->route('contact_id')));
     }
 
     /**
      * @OA\Put(
-     *      path="/api/v1/contacts/{contact-id}",
+     *      path="/api/v1/contacts/{contact_id}",
      *      summary="Update a contact record",
      *      security={"sanctum": {}},
      *      tags={"Contact"},
@@ -199,30 +199,23 @@ class ContactController extends Controller
      *      @OA\Response(response=429, description="Too many requests"),
      * )
      */
-    public function update(UpdateContactRequest $updateContactRequest, Contact $contact): JsonResponse
+    public function update(UpdateContactRequest $updateContactRequest): ContactResource
     {
-        $validated = $updateContactRequest->validated();
-        $contact->update($validated);
+        $contact = Contact::findOrFail($updateContactRequest->route('contact_id'));
+        $contact->update($updateContactRequest->validated());
 
-        return response()->json([
-            'links' => [
-                'self' => route('contacts.show', ['contact-id' => $contact->id]),
-            ],
-            'data' => [
-                'id' => $contact->id,
-            ],
-        ], Response::HTTP_OK);
+        return new ContactResource($contact);
     }
 
     /**
      * Remove the specified resource from storage.
      * @OA\Delete(
-     *      path="/api/v1/contacts/{contact-id}",
+     *      path="/api/v1/contacts/{contact_id}",
      *      security={"sanctum": {}},
      *      summary="Delete a specified resource",
      *      tags={"Contact"},
      *      @OA\Parameter(
-     *          name="contact-id",
+     *          name="contact_id",
      *          description="contact id",
      *          required=true,
      *          in="path",

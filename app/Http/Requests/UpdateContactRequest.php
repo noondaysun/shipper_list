@@ -24,18 +24,18 @@ class UpdateContactRequest extends FormRequest
     public function rules()
     {
         return [
-            'contact-id' => 'required|integer|exists:contacts,id',
+            'contact_id' => 'required|integer|exists:contacts,id',
             'shipper_id' => 'required|integer|exists:shippers,id',
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:255',
-            'cantact_type' => 'required|string|max:255|in:primary,site,billing,admin,shipping',
+            'contact_type' => 'required|string|max:255|in:primary,site,billing,admin,shipping',
         ];
     }
 
     public function all($keys = null)
     {
         $data = parent::all($keys);
-        $data['contact-id'] = $this->route('contact-id');
+        $data['contact_id'] = $this->route('contact_id');
 
         return $data;
     }

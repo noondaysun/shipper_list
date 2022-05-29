@@ -227,16 +227,16 @@
                 }
             }
         },
-        "/api/v1/contacts/{contact-id}": {
+        "/api/v1/contacts/{contact_id}": {
             "get": {
                 "tags": [
                     "Contact"
                 ],
                 "summary": "Prints details for a single contact",
-                "operationId": "239377bf10daec647bec624bc440548c",
+                "operationId": "991e14ba433b3db92abfb91b4a2c79a1",
                 "parameters": [
                     {
-                        "name": "contact-id",
+                        "name": "contact_id",
                         "in": "path",
                         "description": "Contact ID",
                         "schema": {
@@ -283,7 +283,7 @@
                     "Contact"
                 ],
                 "summary": "Update a contact record",
-                "operationId": "10131b94e52e75253759ea58f33aa394",
+                "operationId": "62d959c77a099f3224f09b3d84c6e5ad",
                 "requestBody": {
                     "request": "ContactUpdateRequest",
                     "description": "Contact data to be updated",
@@ -353,10 +353,10 @@
                 ],
                 "summary": "Delete a specified resource",
                 "description": "Remove the specified resource from storage.",
-                "operationId": "06814864a314d245afb66c44b3d5681f",
+                "operationId": "25d7fbfc13e8022574e688b0c6e2efbc",
                 "parameters": [
                     {
-                        "name": "contact-id",
+                        "name": "contact_id",
                         "in": "path",
                         "description": "contact id",
                         "required": true,
@@ -516,13 +516,13 @@
                 }
             }
         },
-        "/api/v1/shippers/{shipper-id}": {
+        "/api/v1/shippers/{shipper_id}": {
             "get": {
                 "tags": [
                     "Shipper"
                 ],
                 "summary": "Prints details for a single shipper",
-                "operationId": "ce4e7eb03c06cc7236583374c8b9a7e5",
+                "operationId": "062a081b7b188bf9e4d84c706f23531e",
                 "parameters": [
                     {
                         "name": "shiiper-id",
@@ -572,7 +572,7 @@
                     "Shipper"
                 ],
                 "summary": "Update a shipper record",
-                "operationId": "723ad850a6ecf8b4e5c4b56153e0b5c5",
+                "operationId": "76edbb44e6aeccb953a15132e097a646",
                 "requestBody": {
                     "request": "ShipperUpdateRequest",
                     "description": "Shipper data to be updated",
@@ -628,7 +628,7 @@
                 ],
                 "summary": "Delete a specified resource",
                 "description": "Remove the specified resource from storage.",
-                "operationId": "5bc464636a7500ba1c0696d57b0bc53e",
+                "operationId": "b5f1cf96ad01ccf59fb7dbf15aca7013",
                 "parameters": [
                     {
                         "name": "shipper_id",

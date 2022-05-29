@@ -24,7 +24,7 @@ class UpdateShipperRequest extends FormRequest
     public function rules()
     {
         return [
-            'shipper-id' => 'required|integer|exists:shippers,id',
+            'shipper_id' => 'required|integer|exists:shippers,id',
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
         ];
@@ -33,7 +33,7 @@ class UpdateShipperRequest extends FormRequest
     public function all($keys = null)
     {
         $data = parent::all($keys);
-        $data['shipper-id'] = $this->route('shipper-id');
+        $data['shipper_id'] = $this->route('shipper_id');
 
         return $data;
     }

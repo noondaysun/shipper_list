@@ -16,11 +16,12 @@
 ```shell
 echo "alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'" >> ~/.zshrc
 source ~/.zshrc
-sail up -d
+make start || sail up -d
 
 sail artisan migrate:fresh --seed
 
 # Run tests using 
-sail test
+make test || sail test
 ```
+
 open [shipper-list.localhost](http://shipper-list.localhost:8083)

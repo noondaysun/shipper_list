@@ -1,21 +1,34 @@
 <?php
 
 use App\Models\Contact;
+use App\Models\Shipper;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Laravel\Sanctum\Sanctum;
 
+beforeEach(function () {
+    User::factory(1)->create();
+    $shipper = Shipper::create([
+        'name' => 'Kris Inc',
+        'address' => '123 Main St',
+    ]);
+    Contact::create([
+        'shipper_id' => $shipper->id,
+        'name' => 'John Doe',
+        'contact_number' => '+1 (770) 854-3563',
+        'contact_type' => 'primary',
+    ]);
+});
+
 test('I can get a list of contacts', function () {
     $this->get('/api/v1/contacts')
-        ->dump()
         ->assertStatus(Response::HTTP_OK)
         ->assertJsonStructure([
             'data' => [
                 '*' => [
                     'id',
                     'name',
-                    'email',
-                    'phone',
+                    'contact_number',
                     'shipper_id',
                     'contact_type',
                     'created_at',
@@ -43,15 +56,13 @@ test('I can get a list of contacts', function () {
 
 test('I can get a filtered list of contacts', function () {
     $this->get('/api/v1/contacts?name=John')
-        ->dump()
         ->assertStatus(Response::HTTP_OK)
         ->assertJsonStructure([
             'data' => [
                 '*' => [
                     'id',
                     'name',
-                    'email',
-                    'phone',
+                    'contact_number',
                     'shipper_id',
                     'contact_type',
                     'created_at',
@@ -78,22 +89,13 @@ test('I can get a filtered list of contacts', function () {
 });
 
 test('I can get a single contact', function () {
-    $contact = Contact::create([
-        'shipper_id' => 1,
-        'name' => 'John Doe',
-        'contact_number' => '+1 (770) 854-3563',
-        'contact_type' => 'primary',
-    ]);
-    dd($contact);
-    $this->get('/api/v1/contacts/'.$contact->id)
-        ->dump()
+    $this->get('/api/v1/contacts/'.Contact::first()->id)
         ->assertStatus(Response::HTTP_OK)
         ->assertJsonStructure([
             'data' => [
                 'id',
                 'name',
-                'email',
-                'phone',
+                'contact_number',
                 'shipper_id',
                 'contact_type',
                 'created_at',
@@ -110,18 +112,36 @@ test('I can create a contact', function () {
     Sanctum::actingAs($user);
 
     $this->post('/api/v1/contacts', [
-        'shipper_id' => 3,
+        'shipper_id' => Shipper::inRandomOrder()->first()->id,
         'name' => 'Maximillian Bills',
         'contact_number' => '+1 (770) 854-3563',
         'contact_type' => 'primary',
-    ])->dump()
-        ->assertStatus(Response::HTTP_OK)
+    ])->assertStatus(Response::HTTP_CREATED)
+        ->assertJsonStructure([
+            'data' => [
+                'id',
+            ],
+            'links' => [
+                'self',
+            ],
+        ]);
+});
+
+test('I can update a contact', function () {
+    $user = User::inRandomOrder()->first();
+    Sanctum::actingAs($user);
+
+    $this->json('PUT', '/api/v1/contacts/'.Contact::first()->id, [
+        'shipper_id' => Shipper::inRandomOrder()->first()->id,
+        'name' => 'Maximillian Bills',
+        'contact_type' => 'site',
+        'contact_number' => '+1 (770) 854-3563',
+    ])->assertStatus(Response::HTTP_OK)
         ->assertJsonStructure([
             'data' => [
                 'id',
                 'name',
-                'email',
-                'phone',
+                'contact_number',
                 'shipper_id',
                 'contact_type',
                 'created_at',
@@ -130,5 +150,9 @@ test('I can create a contact', function () {
             'links' => [
                 'self',
             ],
+        ])
+        ->assertJsonFragment([
+            'name' => 'Maximillian Bills',
+            'contact_type' => 'site',
         ]);
 });
