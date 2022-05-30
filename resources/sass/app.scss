@@ -1,0 +1,14 @@
+// Imports
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+@import 'variables';
+@import './reboot/reboot';
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+@import 'node_modules/bootstrap-vue/src/index.scss';
+
+body {
+    background-color: $body-bg;
+    font-family: $font-family-sans-serif;
+    font-size: $font-size-base;
+    font-weight: 400;
+    color: $first-color;
+}
